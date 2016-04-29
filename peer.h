@@ -6,7 +6,7 @@
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
  *
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -38,7 +38,7 @@
 
 typedef enum { DTLS_CLIENT=0, DTLS_SERVER } dtls_peer_type;
 
-/** 
+/**
  * Holds security parameters, local state and the transport address
  * for each peer. */
 typedef struct dtls_peer_t {
@@ -106,7 +106,7 @@ static inline void dtls_security_params_switch(dtls_peer_t *peer)
   peer->security_params[0] = security;
 }
 
-void peer_init();
+void peer_init(void);
 
 /**
  * Creates a new peer for given @p session. The current configuration
