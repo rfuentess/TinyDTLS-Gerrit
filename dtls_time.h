@@ -33,9 +33,9 @@
  * you do not have time() and gettimeofday().
  * @{
  */
-
+/*RAFS NOTE: Contiki 3.0 had moved clock.h to sys */
 #ifdef WITH_CONTIKI
-#include "clock.h"
+#include "sys/clock.h"
 #else /* WITH_CONTIKI */
 #include <time.h>
 

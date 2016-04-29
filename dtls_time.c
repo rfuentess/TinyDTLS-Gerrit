@@ -28,6 +28,7 @@ clock_time_t dtls_clock_offset;
 
 void
 dtls_clock_init(void) {
+/*WARNING: TinyDTLS is unable to work with platform/native */ 
   clock_init();
   dtls_clock_offset = clock_time();
 }

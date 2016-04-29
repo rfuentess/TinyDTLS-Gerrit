@@ -160,9 +160,10 @@ dsrv_print_addr(const session_t *addr, char *buf, size_t len) {
 
   return p - buf;
 #else /* HAVE_ARPA_INET_H */
+/* RAFS NOTE: Require more testings */
 #if WITH_CONTIKI
   char *p = buf;
-#  ifdef UIP_CONF_IPV6
+#ifdef UIP_CONF_IPV6
   uint8_t i;
   const char hex[] = "0123456789ABCDEF";
 
@@ -181,19 +182,19 @@ dsrv_print_addr(const session_t *addr, char *buf, size_t len) {
     *p++ = hex[(addr->addr.u8[i+1] & 0x0f)];
   }
   *p++ = ']';
-#  else /* UIP_CONF_IPV6 */
-#   warning "IPv4 network addresses will not be included in debug output"
+#else /* UIP_CONF_IPV6 */
+#warning "IPv4 network addresses will not be included in debug output"
 
   if (len < 21)
     return 0;
-#  endif /* UIP_CONF_IPV6 */
+#endif /* UIP_CONF_IPV6 */
   if (buf + len - p < 6)
     return 0;
 
   p += sprintf(p, ":%d", uip_htons(addr->port));
 
   return p - buf;
-# elif defined(RIOT_VERSION) /* WITH_CONTIKI */
+#elif defined(RIOT_VERSION) /* WITH_CONTIKI */
   /*RIOT is strict with warnings and unused vars */
   (void) addr;
   (void) buf;
