@@ -52,6 +52,10 @@
 #  include "platform-specific/config-wismote.h"
 #endif /* CONTIKI_TARGET_WISMOTE */
 
+#ifdef CONTIKI_TARGET_Z1
+#  include "platform-specific/config-z1.h"
+#endif /* CONTIKI_TARGET_WISMOTE */
+
 #ifdef CONTIKI_TARGET_SKY
 #  include "platform-specific/config-sky.h"
 #endif /* CONTIKI_TARGET_SKY */
