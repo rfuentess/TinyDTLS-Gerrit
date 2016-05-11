@@ -64,6 +64,10 @@
 #  include "platform-specific/config-minimal-net.h"
 #endif /* CONTIKI_TARGET_MINIMAL_NET */
 
+#ifdef CONTIKI_TARGET_EXP5438
+#  include "platform-specific/config-exp5438.h"
+#endif
+
 /*RAFS TODO: Insert Native here for giving assert.h to it */
 #endif /* CONTIKI */
 
