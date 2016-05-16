@@ -22,7 +22,6 @@
 #include "tinydtls.h"
 #include "global.h"
 
-
 #ifdef WITH_CONTIKI
 #include "ip/uip.h"
 typedef struct {
@@ -31,7 +30,6 @@ typedef struct {
   unsigned short port;
   int ifindex;
 } session_t;
-//TODO: Insert defines for RIOT
 #elif defined(WITH_RIOT_GNRC)
 #include "net/ipv6/addr.h"
 typedef struct {
