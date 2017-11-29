@@ -15,7 +15,6 @@
  *
  *******************************************************************************/
 
-#include "dtls_config.h"
 #include "dtls_debug.h"
 #include "netq.h"
 #include "utlist.h"
@@ -71,8 +70,12 @@ netq_insert_node(netq_t **queue, netq_t *node) {
   assert(node);
 
   p = *queue;
-  while(p && p->t <= node->t)
+  while(p && p->t <= node->t) {
+    assert(p != node);
+    if (p == node)
+      return 0;
     p = p->next;
+  }
 
   if (p)
     LL_PREPEND_ELEM(*queue, p, node);

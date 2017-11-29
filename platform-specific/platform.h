@@ -6,11 +6,45 @@
 #define _PLATFORM_H_ 1
 
 #ifdef CONTIKI
+#define WITH_CONTIKI 1
+
 #include "contiki.h"
 #include "contiki-lib.h"
 #include "contiki-net.h"
 
 #include "contiki-conf.h"
+
+/* Define to the full name of this package. */
+#define PACKAGE_NAME "tinydtls"
+
+/* Define to the version of this package. */
+#define PACKAGE_VERSION "0.8.6"
+
+/* support for TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8 */
+#ifndef DTLS_CONF_ECC
+#define DTLS_CONF_ECC 1
+#endif
+#if DTLS_CONF_ECC
+#define DTLS_ECC
+#endif
+
+/* support for TLS_PSK_WITH_AES_128_CCM_8 */
+#ifndef DTLS_CONF_PSK
+#define DTLS_CONF_PSK 1
+#endif
+#if DTLS_CONF_PSK
+#define DTLS_PSK
+#endif
+
+/* Disable all debug output and assertions */
+#ifndef DTLS_CONF_NDEBUG
+#if DTLS_CONF_NDEBUG
+#define NDEBUG
+#endif
+#endif
+
+/* Contiki has assert.h */
+#define HAVE_ASSERT_H 1
 
 /* global constants for constrained devices running Contiki */
 #ifndef DTLS_PEER_MAX
@@ -36,29 +70,20 @@
 /** do not use uthash hash tables */
 #define DTLS_PEERS_NOHASH 1
 
-/************************************************************************/
-/* Specific Contiki platforms                                           */
-/************************************************************************/
+/* BYTE_ORDER definition for sha2 */
+#ifndef LITTLE_ENDIAN
+#define LITTLE_ENDIAN UIP_LITTLE_ENDIAN
+#endif
+#ifndef BIG_ENDIAN
+#define BIG_ENDIAN    UIP_BIG_ENDIAN
+#endif
+#ifndef BYTE_ORDER
+#define BYTE_ORDER    UIP_BYTE_ORDER
+#endif
 
-#if CONTIKI_TARGET_ECONOTAG
-#  include "platform-specific/config-econotag.h"
-#endif /* CONTIKI_TARGET_ECONOTAG */
-
-#ifdef CONTIKI_TARGET_CC2538DK
-#  include "platform-specific/config-cc2538dk.h"
-#endif /* CONTIKI_TARGET_CC2538DK */
-
-#ifdef CONTIKI_TARGET_WISMOTE
-#  include "platform-specific/config-wismote.h"
-#endif /* CONTIKI_TARGET_WISMOTE */
-
-#ifdef CONTIKI_TARGET_SKY
-#  include "platform-specific/config-sky.h"
-#endif /* CONTIKI_TARGET_SKY */
-
-#ifdef CONTIKI_TARGET_MINIMAL_NET
-#  include "platform-specific/config-minimal-net.h"
-#endif /* CONTIKI_TARGET_MINIMAL_NET */
+#ifndef SHA2_USE_INTTYPES_H
+#define SHA2_USE_INTTYPES_H 1
+#endif
 
 #endif /* CONTIKI */
 
