@@ -159,9 +159,10 @@ dsrv_print_addr(const session_t *addr, char *buf, size_t len) {
 
   return p - buf;
 #else /* HAVE_ARPA_INET_H */
-# if WITH_CONTIKI
+
+#ifdef WITH_CONTIKI
   char *p = buf;
-#  if NETSTACK_CONF_WITH_IPV6
+#if NETSTACK_CONF_WITH_IPV6
   uint8_t i;
   const char hex[] = "0123456789ABCDEF";
 
@@ -180,31 +181,36 @@ dsrv_print_addr(const session_t *addr, char *buf, size_t len) {
     *p++ = hex[(addr->addr.u8[i+1] & 0x0f)];
   }
   *p++ = ']';
-#  else /* NETSTACK_CONF_IPV6 */
+#else /* NETSTACK_CONF_IPV6 */
   if (len < 21)
     return 0;
 
   p += sprintf(p, "%u.%u.%u.%u",
                addr->addr.u8[0], addr->addr.u8[1],
                addr->addr.u8[2], addr->addr.u8[3]);
-#  endif /* NETSTACK_CONF_IPV6 */
+#endif /* NETSTACK_CONF_IPV6 */
   if (buf + len - p < 6)
     return 0;
 
   p += sprintf(p, ":%d", uip_htons(addr->port));
 
   return p - buf;
-# elif defined(RIOT_VERSION) /* WITH_CONTIKI */
+
+#endif /* WITH_CONTIKI */
+
+#ifdef RIOT_VERSION
   /* FIXME: Switch to RIOT own DEBUG lines */
   (void) addr;
   (void) buf;
   (void) len;
-# else
+#endif /* RIOT_VERSION */
+
+#ifdef WITH_POSIX
   /* TODO: output addresses manually */
-#   warning "inet_ntop() not available, network addresses will not be included in debug output"
-# endif /* WITH_CONTIKI */
+#warning "inet_ntop() not available, network addresses will not be included in debug output"
+#endif /* WITH_POSIX */
   return 0;
-#endif
+#endif /* HAVE_ARPA_INET_H */
 }
 
 #endif /* NDEBUG */
@@ -328,7 +334,7 @@ dtls_dsrv_hexdump_log(log_t level, const char *name, const unsigned char *buf, s
     }
   } else {
     fprintf(log_fd, "%s: (%zu bytes): ", name, length);
-    while (length--) 
+    while (length--)
       fprintf(log_fd, "%02X", *buf++);
   }
   fprintf(log_fd, "\n");
