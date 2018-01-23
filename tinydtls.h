@@ -24,20 +24,28 @@
 #ifndef _DTLS_TINYDTLS_H_
 #define _DTLS_TINYDTLS_H_
 
-#if !defined(CONTIKI) && !defined(RIOT_VERSION)
-#  include "dtls_config.h"
-#elif defined(WITH_RIOT_GNRC) && defined(WITH_RIOT_SOCKETS)
-#  error "TinyDTLS for RIOT can only be compiled with the use of GNRC OR sockets."
-#elif !(defined(WITH_RIOT_GNRC)) && !(defined(WITH_RIOT_SOCKETS)) && defined(RIOT_VERSION)
-#  error "TinyDTLS must be configured for RIOT with WITH_RIOT_GNRC or WITH_RIOT_SOCKETS"
-#elif defined(RIOT_VERSION)
-#  include "platform-specific/riot_boards.h"
-#elif defined(CONTIKI)
-#  include "platform-specific/platform.h"
-#endif /* !CONTIKI && !RIOT_VERSION */
+#ifdef RIOT_VERSION
+#include "platform-specific/riot_boards.h"
+#endif /* RIOT_VERSION */
 
-#if !defined(DTLS_ECC) && !defined(DTLS_PSK)
+#ifdef CONTIKI
+#include "platform-specific/platform.h"
+#endif /* CONTIKI */
+
+#ifndef CONTIKI
+#ifndef RIOT_VERSION
+#ifndef WITH_POSIX
+/* TODO: To remove in a future */
+#define WITH_POSIX 1
+#endif /* WITH_POSIX */
+#include "dtls_config.h"
+#endif /* RIOT_VERSION */
+#endif /* CONTIKI */
+
+#ifndef DTLS_ECC
+#ifndef DTLS_PSK
 #error "TinyDTLS requires at least one Cipher suite!"
-#endif
+#endif /* DTLS_PSK */
+#endif /* DTLS_ECC */
 
 #endif /* _DTLS_TINYDTLS_H_ */
