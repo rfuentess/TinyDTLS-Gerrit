@@ -57,12 +57,12 @@
 
 #ifdef WITH_SHA256
 #  include "sha2/sha2.h"
-#endif
+#endif /* WITH_SHA256 */
 
 #ifdef RIOT_VERSION
 #include "memarray.h"
 MEMARRAY(dtlscontext_storage, sizeof(dtls_context_t), DTLS_CONTEXT_MAX)
-#endif
+#endif /* RIOT_VERSION */
 
 #define dtls_set_version(H,V) dtls_int_to_uint16((H)->version, (V))
 #define dtls_set_content_type(H,V) ((H)->content_type = (V) & 0xff)
@@ -167,7 +167,8 @@ static const unsigned char cert_asn1_header[] = {
 };
 #endif /* DTLS_ECC */
 
-#if defined(WITH_CONTIKI)
+#ifdef WITH_CONTIKI
+
 PROCESS(dtls_retransmit_process, "DTLS retransmit process");
 
 static dtls_context_t the_dtls_context;
@@ -181,7 +182,9 @@ static inline void
 free_context(dtls_context_t *context) {
 }
 
-#elif defined(RIOT_VERSION)
+#endif /* WITH_CONTIKI */
+
+#ifdef RIOT_VERSION
 
 static inline dtls_context_t *  malloc_context(void) {
      return (dtls_context_t *) memarray_alloc(&dtlscontext_storage);
@@ -190,8 +193,9 @@ static inline dtls_context_t *  malloc_context(void) {
 static inline void free_context(dtls_context_t *context) {
   memarray_free(&dtlscontext_storage, context);
 }
+#endif /* RIOT_VERSION */
 
-#else /* WITH_CONTIKI */
+#ifdef WITH_POSIX
 
 static inline dtls_context_t *
 malloc_context(void) {
@@ -202,7 +206,8 @@ static inline void
 free_context(dtls_context_t *context) {
   free(context);
 }
-#endif
+
+#endif /* WITH_POSIX */
 
 void
 dtls_init(void) {
@@ -214,7 +219,7 @@ dtls_init(void) {
 
 #ifdef RIOT_VERSION
   memarray_init(&dtlscontext_storage, sizeof(dtls_context_t), DTLS_CONTEXT_MAX);
-#endif
+#endif /* RIOT_VERSION */
 
 }
 
@@ -1079,7 +1084,7 @@ dtls_update_parameters(dtls_context_t *ctx,
   data_length -= sizeof(uint8) + i;
 
   ok = 0;
-  while ((unsigned) i && !ok) {
+  while (i && !ok) {
     for (j = 0; j < sizeof(compression_methods) / sizeof(uint8); ++j)
       if (dtls_uint8_to_int(data) == compression_methods[j]) {
 	config->compression = compression_methods[j];
@@ -3938,16 +3943,24 @@ dtls_context_t *
 dtls_new_context(void *app_data) {
   dtls_context_t *c;
   dtls_tick_t now;
-#if !(defined(WITH_CONTIKI)) && !(defined(RIOT_VERSION))
+#ifdef WITH_POSIX
   FILE *urandom = fopen("/dev/urandom", "r");
   unsigned char buf[sizeof(unsigned long)];
-#endif /* WITH_CONTIKI */
+#endif /* WITH_POSIX */
 
   dtls_ticks(&now);
-#if (defined(WITH_CONTIKI) || defined(RIOT_VERSION))
-  /* FIXME: need something better to init PRNG here */
+
+#ifdef WITH_CONTIKI
+/* FIXME: need something better to init PRNG here */
+dtls_prng_init(now);
+#endif /* WITH_CONTIKI */
+
+#ifdef RIOT_VERSION
+  /* FIXME: Integrate RIOT's own PRNG  */
   dtls_prng_init(now);
-#else /* WITH_CONTIKI */
+#endif /* RIOT_VERSION */
+
+#ifdef WITH_POSIX
   if (!urandom) {
     dtls_emerg("cannot initialize PRNG\n");
     return NULL;
@@ -3960,7 +3973,7 @@ dtls_new_context(void *app_data) {
 
   fclose(urandom);
   dtls_prng_init((unsigned long)*buf);
-#endif /* WITH_CONTIKI */
+#endif /* WITH_POSIX */
 
   c = malloc_context();
   if (!c)
